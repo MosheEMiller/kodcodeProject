@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <h1>
+        Welcome to the mental health system
+    </h1>
+    <form id="loginForm" action="/submit-login" method="post">
+        <label for="username">UserName</label>
+        <input type="text" id="username" placeholder="enter your username" autocomplete="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="enter your password" autocomplete="current-password" required>
+        <button id="login" type="submit">
+            login
+        </button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./login.js"></script>
+</body>
+
+</html>
