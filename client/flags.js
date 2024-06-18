@@ -1,9 +1,9 @@
 const specializationsFlags = {
-    "psychology": "Psychology",
-    "psychiatry": "Psychiatry",
-    "psychotherapy": "Psychotherapy",
-    "psychoanalysis": "Psychoanalysis",
-    "psychotherapy": "Psychotherapy",
+    psychology: "Psychology",
+    psychiatry: "Psychiatry",
+    psychotherapy: "Psychotherapy",
+    psychoanalysis: "Psychoanalysis",
+    psychotherapy: "Psychotherapy",
 }
 
 const areasFlags = {
@@ -14,4 +14,8 @@ const areasFlags = {
     central: "Central",
 }
 
-module.exports = { specializationsFlags, areasFlags };
+const generalFlags = {
+    all: "All"
+}
+
+module.exports = { specializationsFlags, areasFlags, generalFlags };
