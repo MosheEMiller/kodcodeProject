@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const { specializationsFlags, areasFlags, errorFlags, generalFlags } = require('./flags')
 const Schema = mongoose.Schema;
+const { specializationsFlags, areasFlags, errorFlags, generalFlags } = require('./flags')
+const { generateWorkingDayTimes } = require('./utils')
 
 async function connectDB() {
     try {
@@ -26,8 +27,21 @@ const therapistSchema = new Schema({
     phone: { type: String, required: true },
     mail: { type: String, required: true, unique: true },
     specialization: { type: String, required: true },
+    beginningTime: { type: Number, required: true },
+    endingTime: { type: Number, required: true },
+    sessionLength: { type: Number, required: true },
+    interval: { type: Number, required: true },
 });
 const therapist = mongoose.model("therapist", therapistSchema)
+
+const appointmentSchema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+    therapist: { type: Schema.Types.ObjectId, ref: 'therapist', required: true },
+    date: { type: Date, required: true },
+    hour: { type: Number, required: true },
+});
+const appointment = mongoose.model("appointment", appointmentSchema);
+
 
 async function DBInitialization() {
     try {
@@ -47,16 +61,18 @@ async function DBInitialization() {
 
         const therapistsList = [];
         for (let i = 1; i <= 50; i++) {
+            const { beginningTime, endingTime, sessionLength, interval } = generateWorkingDayTimes();
             therapistsList.push({
                 name: "therapist" + i,
                 address: "addressStreet" + i,
                 area: Object.values(areasFlags)[i % Object.values(areasFlags).length],
                 phone: i + "-12345678",
-                mail: " mail" + i + "@gmail.com",
-                specialization:
-                    Object.values(specializationsFlags)[
-                    i % Object.values(specializationsFlags).length
-                    ],
+                mail: "mail" + i + "@gmail.com",
+                specialization: Object.values(specializationsFlags)[i % Object.values(specializationsFlags).length],
+                beginningTime: beginningTime,
+                endingTime: endingTime,
+                sessionLength: sessionLength,
+                interval: interval,
             });
         }
 
@@ -110,7 +126,7 @@ async function getTherapists(area, specialization, name, date) {
             filter.name = { $regex: name, $options: 'i' };
         }
         // check if these therapists have at least one free appointment on the received date       
-         const therapistData = await therapist.find(filter);
+        const therapistData = await therapist.find(filter);
         return therapistData;
     } catch (error) {
         throw new Error(error.message);

@@ -13,14 +13,14 @@ app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     try {
         const userData = await db.login(username, password);
-        res.status(200).json({ message: 'Login successful', user: userData });
+        return res.status(200).json({ message: 'Login successful', user: userData });
     } catch (error) {
         if (error.message === errorFlags.userNotFound) {
-            res.status(404).json({ message: errorFlags.userNotFound });
+            return res.status(404).json({ message: errorFlags.userNotFound });
         } else if (error.message === errorFlags.incorrectPassword) {
-            res.status(401).json({ message: errorFlags.incorrectPassword });
+            return res.status(401).json({ message: errorFlags.incorrectPassword });
         } else {
-            res.status(500).json({ message: errorFlags.internalServerError });
+            return res.status(500).json({ message: errorFlags.internalServerError });
         }
     }
 });
@@ -34,10 +34,10 @@ app.get('/api/therapists', authentication, badTherapistsReqChecker, async (req, 
             return res.status(200).json({ message: 'No therapists found' });
         }
 
-        res.status(200).json({ message: 'got relevant therapists', data: therapistsData });
+        return res.status(200).json({ message: 'got relevant therapists', data: therapistsData });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
@@ -49,22 +49,22 @@ async function authentication(req, res, next) {
         next()
     } catch (error) {
         if (error.message === errorFlags.userNotFound) {
-            res.status(401).json({ message: errorFlags.authenticationFailed });
+            return res.status(401).json({ message: errorFlags.authenticationFailed });
         }
-        res.status(500).json({ message: errorFlags.internalServerError });
+        return res.status(500).json({ message: errorFlags.internalServerError });
     }
 };
 
 function badTherapistsReqChecker(req, res, next) {
     const { area, specialization, name, date } = req.query;
     if (!Object.values(areasFlags).includes(area) && area !== generalFlags.all) {
-        res.status(400).json({ message: errorFlags.notAValidArea });
+        return res.status(400).json({ message: errorFlags.notAValidArea });
     };
     if (!Object.values(specializationsFlags).includes(specialization) && specialization !== generalFlags.all) {
-        res.status(400).json({ message: errorFlags.notAValidSpecialization });
+        return res.status(400).json({ message: errorFlags.notAValidSpecialization });
     };
     if (date && date < Date.now()) {
-        res.status(400).json({ message: errorFlags.notAValidDate });
+        return res.status(400).json({ message: errorFlags.notAValidDate });
     };
     next()
 };
