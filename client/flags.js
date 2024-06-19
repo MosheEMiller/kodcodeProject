@@ -3,7 +3,6 @@ const specializationsFlags = {
     psychiatry: "Psychiatry",
     psychotherapy: "Psychotherapy",
     psychoanalysis: "Psychoanalysis",
-    psychotherapy: "Psychotherapy",
 }
 
 const areasFlags = {

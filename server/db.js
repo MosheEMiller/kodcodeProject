@@ -18,7 +18,6 @@ const userSchema = new Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true }
 });
-const user = mongoose.model('user', userSchema);
 
 const therapistSchema = new Schema({
     name: { type: String, required: true },
@@ -32,14 +31,16 @@ const therapistSchema = new Schema({
     sessionLength: { type: Number, required: true },
     interval: { type: Number, required: true },
 });
-const therapist = mongoose.model("therapist", therapistSchema)
 
 const appointmentSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-    therapist: { type: Schema.Types.ObjectId, ref: 'therapist', required: true },
-    date: { type: Date, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+    therapistId: { type: Schema.Types.ObjectId, ref: 'therapist', required: true },
+    date: { type: String, required: true },
     hour: { type: Number, required: true },
 });
+
+const user = mongoose.model('user', userSchema);
+const therapist = mongoose.model("therapist", therapistSchema);
 const appointment = mongoose.model("appointment", appointmentSchema);
 
 
@@ -78,6 +79,9 @@ async function DBInitialization() {
 
         await therapist.insertMany(therapistsList);
         console.log("Therapists inserted successfully");
+
+        await appointment.collection.drop();
+        console.log('Appointment collection dropped');
     } catch (error) {
         console.error('Error:', error);
     } finally {
@@ -101,13 +105,25 @@ async function login(username, password) {
     }
 }
 
-async function getUserData(userId) {
+async function getUser(userId) {
     try {
         const userData = await user.findOne({ _id: userId });
         if (!userData) {
             throw new Error(errorFlags.userNotFound);
         }
         return userData;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+async function getOneTherapist(therapistId) {
+    try {
+        const therapistData = await therapist.findOne({ _id: therapistId });
+        if (!therapistData) {
+            throw new Error(errorFlags.therapistNotFound);
+        }
+        return therapistData;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -125,9 +141,63 @@ async function getTherapists(area, specialization, name, date) {
         if (name) {
             filter.name = { $regex: name, $options: 'i' };
         }
-        // check if these therapists have at least one free appointment on the received date       
         const therapistData = await therapist.find(filter);
+        if (date !== generalFlags.all) {
+            for (let i = 0; i < therapistData.length; i++) {
+                const freeAppointments = await getFreeAppointments(therapistData[i]._id, date);
+                if (freeAppointments.length === 0) {
+                    therapistData.splice(i, 1);
+                    i--;
+                }
+            }
+        }
         return therapistData;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+async function getFreeAppointments(therapistId, date) {
+    try {
+        const { beginningTime, endingTime, sessionLength, interval, } = await therapist.findOne({ _id: therapistId });
+        const appointmentsData = await appointment.find({ therapist: therapistId, date: date });
+        const amountAppointments = Math.floor(endingTime - beginningTime / interval);
+        const freeAppointments = [];
+        for (let i = 0; i < amountAppointments; i++) {
+            const hour = beginningTime + i * interval;
+            let isFree = true;
+            for (let j = 0; j < appointmentsData.length; j++) {
+                if (appointmentsData[j].hour === hour) {
+                    isFree = false;
+                    break;
+                }
+            }
+            if (isFree) {
+                freeAppointments.push({ hour: hour });
+            }
+        }
+        return freeAppointments;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+async function createAppointment(userId, therapistId, date, hour) {
+    const freeAppointments = await getFreeAppointments(therapistId, date);
+    if (freeAppointments.length === 0) {
+        throw new Error(errorFlags.noFreeAppointments);
+    }
+    if (!freeAppointments.some(appointment => appointment.hour === hour)) {
+        throw new Error(errorFlags.appointmentNotAvailable);
+    }
+    try {
+        const appointmentData = await appointment.create({
+            userId: userId,
+            therapistId: therapistId,
+            date: date,
+            hour: hour
+        });
+        return await appointment.findOne({ _id: appointmentData._id }).populate('therapist').populate('user');
     } catch (error) {
         throw new Error(error.message);
     }
@@ -138,6 +208,9 @@ connectDB();
 
 module.exports = {
     login,
-    getUserData,
+    getUser,
+    getOneTherapist,
     getTherapists,
+    getFreeAppointments,
+    createAppointment,
 };
