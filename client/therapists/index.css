@@ -1,0 +1,89 @@
+body {
+    height: 100vh;
+    overflow: hidden;
+  }
+  #static-header {
+    text-align: center;
+    background-color: aquamarine;
+    align-items: center;
+  }
+  #categorical-search-form {
+    text-align: center;
+  }
+  #myForm{
+      display: none;
+  }
+  #results {
+    height: 100%;
+    text-align: center;
+    overflow: scroll;
+  }
+  #tmptext1 {
+    margin-top: 140px;
+  }
+  #swithbut1 {
+    margin-top: 20px;
+    margin-right: 20px;
+  }
+  #swithbut2 {
+    margin-top: 20px;
+    margin-right: 20px;
+  }
+  .container {
+    margin: 20px;
+    border-radius: 20px;
+    border: 2px solid #2fffa8;
+    width: 100;
+    border: 1px solid #000;
+    background-color: #f0f0f0;
+  }
+  .form-popup {
+    position: unset;
+    background-color: #f0f0f0;
+    border: gray 15px;
+    border-radius: 15px;
+    height: 60%;
+    width: 40%;
+  }
+  .top-part {
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #d0d0d0;
+  }
+  .bottom-part {
+    border-radius: 20px;
+    display: none;
+    padding: 20px;
+  }
+  .container:hover .bottom-part {
+    display: block;
+  }
+  .form-popup {
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    right: 30%;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+  }
+  #subbot {
+    display: block;
+    margin: 50px;
+  }
+  #close {
+    display: block;
+    margin: 50px;
+  }
+  #input1 {
+    display: block;
+    margin: 50px;
+  }
+  .therapistid {
+    display: block;
+  }
+  .card {
+    background: fixed rgb(142, 141, 66);
+  }
+  
+  

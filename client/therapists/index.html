@@ -1,11 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindfulMatch</title>
+    <link rel="stylesheet" href="index.css" />
 </head>
+
 <body>
-    
+    <div id="static-header">
+        <h1>Welcome to our site</h1>
+    </div>
+    <div id="categorical-search-form">
+        
+            <button onclick="switchToSearchByTherapist()">
+                Search by Therapist
+            </button>
+      
+        <div id="theIdForAppontment"></div>
+        <div class="search-form" id="search1">
+            <h2>Search by Treatment</h2>
+            <label for="treatment-type">Type of Treatment:</label>
+            <select id="treatment-type">
+                <option value="All">All</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Psychiatry">Psychiatry</option>
+                <option value="Psychotherapy">Psychotherapy</option>
+                <option value="Psychoanalysis">Psychoanalysis</option>
+            </select>
+            <label for="location">Desired Area:</label>
+            <select id="location">
+                <option value="All">All</option>
+                <option value="Centeralr">Center</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="East">East</option>
+                <option value="West">West</option>
+            </select>
+            <label for="preferred-time">Preferred date:</label>
+            <input type="date" id="preferred-time" placeholder="Enter preferred time" />
+            <button onclick="searchByTreatment()">Search</button>
+        </div>
+    </div>
+    <div id="search-form-therapist" style="display: none">
+        <div id="swithbut2" style="text-align: right">
+            <button id="switchbutton" onclick="switchToSearchByTreatment()">
+                Back to Treatment Search
+            </button>
+        </div>
+        <div class="search-form" id="search2">
+            <h2>Search by Therapist Name</h2>
+            <label for="therapist-name">Therapist Name:</label>
+            <input type="text" id="therapist-name" placeholder="Enter therapist's name" />
+            <button onclick="searchByTherapist()">Search</button>
+        </div>
+    </div>
+    <hr />
+    </div>
+    <div class="form-popup" id="myForm">
+        <form action="/submit-data" method="post">
+            <input id="input1" placeholder="Enter data" type="date" name="data" required />
+            <select id="input2"></select><button id="subbut" type="submit" onclick="appontment()">Submit</button>
+            <button id="close" type="button" onclick="closeForm()">Close</button>
+        </form>
+    </div>`;
+    <div id="results"></div>
+    <script src="index.js"></script>
 </body>
+
 </html>
