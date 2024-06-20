@@ -41,7 +41,7 @@ app.get('/api/therapists', authentication, isValidArea, isValidSpecialization, i
     }
 });
 app.get('/api/freeAppointment', authentication, anExistingTherapist, isValidDate, async (req, res) => {
-    const { therapistId, date } = req.body;
+    const { therapistId, date } = req.query;
     try {
         const freeAppointmentData = await db.freeappointment(therapistId, date);
         return res.status(200).json({ message: 'These are the free appointmentData', freeAppointment: freeAppointmentData });
@@ -95,7 +95,7 @@ function isValidSpecialization(req, res, next) {
 function isValidDate(req, res, next) {
     const dateString = req.body.date || req.query.date;
     if (dateString === generalFlags.all) {
-       return next();
+        return next();
     }
     const dateParts = dateString.split(/[/\.]/).map(Number);
     if (dateParts.length !== 3) {
@@ -123,7 +123,7 @@ function isValidDate(req, res, next) {
     const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
     if (inputDate.getTime() === todayDate.getTime()) {
-      return  next();
+        return next();
     }
 
     if (inputDate < todayDate) {
@@ -141,7 +141,7 @@ function isValidHour(req, res, next) {
 };
 async function anExistingTherapist(req, res, next) {
     try {
-        await db.getOneTherapist(req.body.therapistId);
+        await db.getOneTherapist(req.body.therapistId||req.query.therapistId);
         next();
     } catch (error) {
         return res.status(404).json({ message: errorFlags.therapistNotFound });
